@@ -7,22 +7,25 @@ import (
 
 // SolveEquations takes a list of equations and solves them to get the value of the
 // variables
-func SolveEquations(equations []Equation) {
+func SolveEquations(equations []Equation) (map[string]float64, error) {
 	variablesToSolve := getAllVariables(equations)
 	if len(variablesToSolve) < len(equations) {
 		fmt.Println("Insufficient information")
-		return
+		return nil, errors.New("Insufficient information")
 	}
 	solution, er := elimination2(equations, variablesToSolve)
 
 	if er != nil {
 		fmt.Println(er)
+		return nil, errors.New(er.Error())
 	}
 
-	fmt.Println("Solution to the equations: ")
-	for k, v := range solution {
-		fmt.Printf("%s : %.2f\n", k, v)
-	}
+	// fmt.Println("Solution to the equations: ")
+	// for k, v := range solution {
+	// 	fmt.Printf("%s : %.2f\n", k, v)
+	// }
+	fmt.Println("Solved")
+	return solution, nil
 }
 
 func swapEquations(equations *[]Equation, startIndex int, variable string) {

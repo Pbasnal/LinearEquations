@@ -1,10 +1,49 @@
 package main
 
-import "linearequations/equation"
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"linearequations/equation"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
 
 func main() {
+	setupTheRestAPI()
 	testEquationBuilder()
+}
+
+func setupTheRestAPI() {
+	router := mux.NewRouter()
+	router.HandleFunc("/", GetData).Methods("GET")
+	router.HandleFunc("/eq", SolveEquations).Methods("POST")
+	log.Fatal(http.ListenAndServe(":8000", router))
+}
+
+// GetData - gets test data
+func GetData(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("people")
+}
+
+func SolveEquations(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	equations := []equation.Equation{}
+
+	for _, v := range r.Form {
+		equations = append(equations, equation.BuildEquationFromText(v[0]))
+	}
+
+	solution, er := equation.SolveEquations(equations)
+
+	if er != nil {
+		json.NewEncoder(w).Encode(er)
+		return
+	}
+
+	json.NewEncoder(w).Encode(solution)
 }
 
 func testEquationBuilder() {
@@ -12,7 +51,7 @@ func testEquationBuilder() {
 	e1.PrintNormalizedEquation()
 	e1 = equation.BuildEquationFromText("1z+0y+8=3")
 	e1.PrintNormalizedEquation()
-	e1 = equation.BuildEquationFromText("7 y-3=3")
+	e1 = equation.BuildEquationFromText("7 y-3=3+7x")
 	e1.PrintNormalizedEquation()
 	e1 = equation.BuildEquationFromText("7 y-3+4x - z+a=3")
 	e1.PrintNormalizedEquation()
