@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"linearequations/equation"
 	"log"
 	"net/http"
+
+	"github.com/Pbasnal/linearequations/equation"
 
 	"github.com/gorilla/mux"
 )
