@@ -2,6 +2,15 @@ package equation
 
 import "fmt"
 
+// Equation holds the Raw Equation and normalized equations
+type Equation struct {
+	equationNodes  []equationNode
+	equalToNodeLoc int
+
+	normalizedEq RootNode
+}
+
+// equationNode holds one unit of the equation like '2x' or '5' or '='
 type equationNode interface {
 	print()
 	getValueAndType() (float64, string)

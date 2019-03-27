@@ -2,45 +2,73 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/Pbasnal/linearequations/equation"
+
+	"html/template"
 
 	"github.com/gorilla/mux"
 )
 
+var tpl *template.Template
+
 func main() {
+
+	tpl = loadHtmlPages()
 	setupTheRestAPI()
-	testEquationBuilder()
+	//testEquationBuilder()
+}
+
+func loadHtmlPages() *template.Template {
+
+	return template.Must(template.ParseGlob("templates/*.html"))
 }
 
 func setupTheRestAPI() {
+
 	router := mux.NewRouter()
-	router.HandleFunc("/", GetData).Methods("GET")
+	router.HandleFunc("/", Index).Methods("GET")
 	router.HandleFunc("/eq", SolveEquations).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
 
-// GetData - gets test data
-func GetData(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("people")
+// Index - sends the index page
+func Index(w http.ResponseWriter, r *http.Request) {
+
+	tpl.ExecuteTemplate(w, "index.html", nil)
 }
 
 func SolveEquations(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println("PostMethod")
 	r.ParseForm()
 
+	fmt.Println("SolveEquations ", r.Form)
 	equations := []equation.Equation{}
 
+	var er error
+	var solution map[string]float64
+
 	for _, v := range r.Form {
+		if len(v) == 0 || strings.TrimSpace(v[0]) == "" {
+			er = errors.New("Empty equation provided")
+			break
+		}
+		//fmt.Println(v[0])
 		equations = append(equations, equation.BuildEquationFromText(v[0]))
 	}
 
-	solution, er := equation.SolveEquations(equations)
+	if er == nil {
+		solution, er = equation.SolveEquations(equations)
+	}
 
 	if er != nil {
-		json.NewEncoder(w).Encode(er)
+		json.NewEncoder(w).Encode(er.Error())
 		return
 	}
 

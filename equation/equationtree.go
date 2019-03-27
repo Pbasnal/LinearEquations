@@ -12,6 +12,7 @@ type RootNode struct {
 
 // CreateEquationTree - creates a new root node
 func CreateEquationTree() RootNode {
+
 	return RootNode{
 		make(map[string]*variableNode),
 		[]string{},
@@ -22,6 +23,7 @@ func CreateEquationTree() RootNode {
 
 // AddVariable - adds a variable to the node
 func (t *RootNode) AddVariable(coeff float64, variable string) {
+
 	if t.equalToAdded {
 		coeff *= -1.0
 	}
@@ -38,14 +40,16 @@ func (t *RootNode) AddVariable(coeff float64, variable string) {
 
 // AddConstant - adds a constant to the node
 func (t *RootNode) AddConstant(value float64) {
+
 	if !t.equalToAdded {
 		value *= -1.0
 	}
 	t.constant.value += value
 }
 
-// AddEqualTo - adds the equalTo
+// AddEqualTo - sets the boolean which signifies that the equalto symbol has been passed
 func (t *RootNode) AddEqualTo() {
+
 	t.equalToAdded = true
 }
 

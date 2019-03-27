@@ -8,6 +8,7 @@ import (
 // SolveEquations takes a list of equations and solves them to get the value of the
 // variables
 func SolveEquations(equations []Equation) (map[string]float64, error) {
+
 	variablesToSolve := getAllVariables(equations)
 	if len(variablesToSolve) < len(equations) {
 		fmt.Println("Insufficient information")
@@ -20,15 +21,13 @@ func SolveEquations(equations []Equation) (map[string]float64, error) {
 		return nil, errors.New(er.Error())
 	}
 
-	// fmt.Println("Solution to the equations: ")
-	// for k, v := range solution {
-	// 	fmt.Printf("%s : %.2f\n", k, v)
-	// }
-	fmt.Println("Solved")
 	return solution, nil
 }
 
+// this is used to bring the equation which has largest coefficient for the given variable to the top
+// this maintains numerical stability and also helps in solving the equation in one go.
 func swapEquations(equations *[]Equation, startIndex int, variable string) {
+
 	maxCoeffofVar, err := (*equations)[startIndex].getCoeffOfVariable(variable)
 	maxCoeffIndex := startIndex
 
@@ -53,7 +52,9 @@ func swapEquations(equations *[]Equation, startIndex int, variable string) {
 	}
 }
 
+// This methods gets a list of all the variables that needs to be solved
 func getAllVariables(equations []Equation) []string {
+
 	variablesToSolve := []string{}
 	for i := 0; i < len(equations); i++ {
 		for j := 0; j < len(equations[i].normalizedEq.symbols); j++ {
@@ -73,6 +74,7 @@ func getAllVariables(equations []Equation) []string {
 	return variablesToSolve
 }
 
+// this is elimination logic to solve the equations
 func elimination2(equations []Equation, variablesToSolve []string) (map[string]float64, error) {
 
 	solutions := make(map[string]float64)
@@ -105,7 +107,9 @@ func elimination2(equations []Equation, variablesToSolve []string) (map[string]f
 	return solutions, nil
 }
 
+// it reduces the equations using one of the equation
 func reduceEquations(startIndex int, equations *[]Equation, variable string, solutions *map[string]float64) (bool, error) {
+
 	backtrack := false
 	for j := startIndex + 1; j < len(*equations); j++ {
 		value, err := (*equations)[j].getCoeffOfVariable(variable)

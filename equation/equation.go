@@ -5,14 +5,7 @@ import (
 	"fmt"
 )
 
-// Equation does something
-type Equation struct {
-	equationNodes  []equationNode
-	normalizedEq   RootNode
-	equalToNodeLoc int
-}
-
-// CreateEquation creates a new instance of the code
+// CreateEquation creates a new instance of the Equation
 func CreateEquation() Equation {
 	e := Equation{}
 	e.equationNodes = []equationNode{}
@@ -20,7 +13,7 @@ func CreateEquation() Equation {
 	return e
 }
 
-// CreateTestEquation does something
+// CreateTestEquation returns a test equation with dummy values
 func CreateTestEquation() Equation {
 	twox := variableNode{2, "x"}
 	twoy := variableNode{2, "y"}
@@ -37,6 +30,7 @@ func CreateTestEquation() Equation {
 
 // AppendVariableToEqation appends variable
 func (e *Equation) AppendVariableToEqation(coeff float64, variable string) {
+	// clipping the num to maintain number stability and because most of the number printing is done with %.2f
 	if coeff < 0.001 && coeff > -0.001 {
 		return //coeff = 0.0
 	}
@@ -48,6 +42,7 @@ func (e *Equation) AppendVariableToEqation(coeff float64, variable string) {
 
 // AppendConstantToEqation appends variable
 func (e *Equation) AppendConstantToEqation(value float64) {
+	// clipping the num to maintain number stability and because most of the number printing is done with %.2f
 	if value < 0.001 && value > -0.001 {
 		return //	value = 0.0
 	}
@@ -157,6 +152,7 @@ func SubtractEquations(e1 Equation, e2 Equation) Equation {
 	return result
 }
 
+// checks if the slice contains a value or not
 func sliceContains(slice []string, val string) bool {
 	for i := 0; i < len(slice); i++ {
 		if slice[i] == val {
@@ -175,8 +171,10 @@ func (e Equation) getCoeffOfVariable(variable string) (float64, error) {
 	return 0, errors.New("Variable does not exists")
 }
 
+// it takes the solutions and evaluates the equation.
+// If after evaluation, we get another equation with only one variable,
+// it computes the value of the remaining variable
 func (e Equation) solve(solutions *map[string]float64) {
-
 	for k, v := range *solutions {
 		if _, ok := e.normalizedEq.variables[k]; ok {
 			e.normalizedEq.constant.value -= e.normalizedEq.variables[k].coeff * v

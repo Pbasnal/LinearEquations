@@ -5,8 +5,9 @@ import (
 	"unicode"
 )
 
-// BuildEquationFromText - builds a linear equation which is in string format
+// BuildEquationFromText - builds a linear equation from the given equaion in string format
 func BuildEquationFromText(eq string) Equation {
+
 	lenOfEq := len(eq)
 	queue := []rune{}
 	queueIndex := -1
@@ -54,12 +55,6 @@ func BuildEquationFromText(eq string) Equation {
 }
 
 func addVariableOrConstToEquation(queue *[]rune, queueIndex *int, variablePart *int, e *Equation) {
-	// fmt.Println()
-	// for i := 0; i < len(*queue); i++ {
-	// 	fmt.Printf("%c|", (*queue)[i])
-	// }
-	// fmt.Printf(".")
-	// fmt.Println("\nqueueindex: ", *queueIndex, "\tVarpart: ", *variablePart)
 
 	if unicode.IsLetter((*queue)[*queueIndex]) {
 		num := 1.0
@@ -73,7 +68,6 @@ func addVariableOrConstToEquation(queue *[]rune, queueIndex *int, variablePart *
 		}
 
 		variable = string((*queue)[*variablePart:])
-		//fmt.Println("adding: ", num, "|", variable, "\t orig: ", string((*queue)[0:*variablePart]))
 
 		e.AppendVariableToEqation(num, variable)
 	} else if unicode.IsNumber((*queue)[*queueIndex]) {
